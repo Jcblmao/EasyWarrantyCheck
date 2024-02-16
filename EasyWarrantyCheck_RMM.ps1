@@ -182,6 +182,16 @@ function Get-WarrantyAsus {
         Get-WebDriver
         Get-SeleniumModule
         $WebDriverPath = "C:\temp\chromedriver-win64"
+        if (-not $chromiumInstalled) {
+            $Path = $env:TEMP
+            $Installer = "chrome_installer.exe"
+        
+            # Download the installer
+            Invoke-WebRequest "https://dl.google.com/chrome/install/latest/chrome_installer.exe" -OutFile "$Path\$Installer"
+        
+            # Run the installer
+            Start-Process -FilePath "$Path\$Installer" -Args "/silent /install" -Verb RunAs -Wait
+        }
         # Set Chrome options to run in headless mode
         $ChromeService = [OpenQA.Selenium.Chrome.ChromeDriverService]::CreateDefaultService($WebDriverPath, 'chromedriver.exe')
         $ChromeService.HideCommandPromptWindow = $true
@@ -312,6 +322,16 @@ function Get-WarrantyDell {
         )
         Get-WebDriver
         Get-SeleniumModule
+        if (-not $chromiumInstalled) {
+            $Path = $env:TEMP
+            $Installer = "chrome_installer.exe"
+        
+            # Download the installer
+            Invoke-WebRequest "https://dl.google.com/chrome/install/latest/chrome_installer.exe" -OutFile "$Path\$Installer"
+        
+            # Run the installer
+            Start-Process -FilePath "$Path\$Installer" -Args "/silent /install" -Verb RunAs -Wait
+        }
         [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls, [Net.SecurityProtocolType]::Tls11, [Net.SecurityProtocolType]::Tls12, [Net.SecurityProtocolType]::Ssl3
         [Net.ServicePointManager]::SecurityProtocol = "Tls, Tls11, Tls12, Ssl3"
         $URL = "https://www.dell.com/support/productsmfe/en-us/productdetails?selection=$serial&assettype=svctag&appname=warranty&inccomponents=false&isolated=false"
@@ -589,6 +609,16 @@ function Get-WarrantyHP {
         Get-WebDriver
         Get-SeleniumModule
         $WebDriverPath = "C:\temp\chromedriver-win64"
+        if (-not $chromiumInstalled) {
+            $Path = $env:TEMP
+            $Installer = "chrome_installer.exe"
+        
+            # Download the installer
+            Invoke-WebRequest "https://dl.google.com/chrome/install/latest/chrome_installer.exe" -OutFile "$Path\$Installer"
+        
+            # Run the installer
+            Start-Process -FilePath "$Path\$Installer" -Args "/silent /install" -Verb RunAs -Wait
+        }
         # Set Chrome options to run in headless mode
         $ChromeService = [OpenQA.Selenium.Chrome.ChromeDriverService]::CreateDefaultService($WebDriverPath, 'chromedriver.exe')
         $ChromeService.HideCommandPromptWindow = $true
@@ -1091,6 +1121,48 @@ function Get-MachineInfo {
         Model = $model
     }
     return $MachineInfo
+}
+
+function Check-ChromiumInstalled {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory=$false)]
+        [string]$Browser = "All"
+    )
+    $ChromeInstalled = $false
+    $EdgeInstalled = $false
+
+    # Check for Google Chrome
+    if ($Browser -eq "Chrome" -or $Browser -eq "All") {
+        $chromePaths = @(
+            'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\chrome.exe',
+            'HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\App Paths\chrome.exe',
+            'HKCU:\Software\Microsoft\Windows\CurrentVersion\App Paths\chrome.exe'
+        )
+        foreach ($path in $chromePaths) {
+            if (Test-Path $path) {
+                $ChromeInstalled = $true
+                break
+            }
+        }
+    }
+
+    # Check for Microsoft Edge
+    if ($Browser -eq "Edge" -or $Browser -eq "All") {
+        $edgePaths = @(
+            'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\msedge.exe',
+            'HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\App Paths\msedge.exe',
+            'HKCU:\Software\Microsoft\Windows\CurrentVersion\App Paths\msedge.exe'
+        )
+        foreach ($path in $edgePaths) {
+            if (Test-Path $path) {
+                $EdgeInstalled = $true
+                break
+            }
+        }
+    }
+
+    return $ChromeInstalled -or $EdgeInstalled
 }
 
 function Convert-EpochToDateTime {

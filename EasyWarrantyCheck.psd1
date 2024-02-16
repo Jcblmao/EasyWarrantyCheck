@@ -77,6 +77,7 @@
         'Get-WarrantyHP',
         'Get-WarrantyLenovo',
         'Get-MachineInfo',
+        'Check-ChromiumInstalled',
         'Get-SelniumModule',
         'Get-WarrantyToshiba'
     )

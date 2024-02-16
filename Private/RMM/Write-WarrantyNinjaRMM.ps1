@@ -12,8 +12,8 @@ function Write-WarrantyNinjaRMM {
         .PARAMETER Serial
         Manually set serial
     
-        .PARAMETER Manufacture
-        Manually set Manufacture
+        .PARAMETER Manufacturer
+        Manually set Manufacturer
     
     #>
         [CmdletBinding(SupportsShouldProcess)]
